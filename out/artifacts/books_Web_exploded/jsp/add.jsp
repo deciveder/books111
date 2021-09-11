@@ -42,7 +42,7 @@
                 <div class="form-group">
                     <div style="margin-left: 150px;">
                         <button type="button" id="send">提交</button>
-<%--                            <button type="button" id="put">提交</button>--%>
+<%--                            <button type="submit" id="put">提交</button>--%>
                         <button type="button" onclick="history.go(-1)">返回</button>
                     </div>
                 </div>
