@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+<generatorConfiguration>
+
+    <!--
+        mysql驱动的位置
+        想使用mybatis的逆向工程，需要有一个数据库的驱动jar包
+        因为逆向工程是根据数据库表来生成代码，那么就有JDBC操作，
+     -->
+    <classPathEntry location="D:\maven\repository\mysql\mysql-connector-java\5.1.47\mysql-connector-java-5.1.47.jar" />
+
+    <!--
+        context:生成一组对象的环境
+        id:必选，上下文id，用于在生成错误时提示
+        defaultModelType:指定生成对象的样式
+            1，conditional：类似hierarchical；
+            2，flat：所有内容（主键，blob）等全部生成在一个对象中；
+            3，hierarchical：主键生成一个XXKey对象(key class)，Blob等单独生成一个对象，其他简单属性在一个对象中(record class)
+        targetRuntime:
+            1，MyBatis3：默认的值，生成基于MyBatis3.x以上版本的内容，包括XXXBySample；
+            2，MyBatis3Simple：类似MyBatis3，只是不生成XXXBySample；
+        introspectedColumnImpl：类全限定名，用于扩展MBG
+    -->
+    <context id="Tables" targetRuntime="MyBatis3">
+
+        <!-- 注释 -->
+        <commentGenerator>
+            <!-- 是否生成注释代时间戳 -->
+            <property name="suppressDate" value="true"/>
+            <!-- 是否去除自动生成的注释 true：是 ： false:否 -->
+            <property name="suppressAllComments" value="true"/>
+            <!-- 此处为 true 时，生成的 Model 包含对应表字段注释 -->
+            <property name="addRemarkComments" value="true"/>
+            <!-- 此处为 true 时，生成的 Mapper 接口将增加 @Mapper 注解，Spring ComponentScan 时可自动识别 -->
+            <property name="addMapperAnnotation" value="true"/>
+
+        </commentGenerator>
+
+        <!-- JDBC连接 连接数据库的配置 -->
+        <jdbcConnection
+                driverClass="com.mysql.jdbc.Driver"
+                connectionURL="jdbc:mysql://localhost:3306/test?characterEncoding=UTF-8"
+                userId="root"
+                password="123456">
+
+            <property name="useInformationSchema" value="true"/>
+
+        </jdbcConnection>
+
+        <!-- 非必需，类型处理器，在数据库类型和java类型之间的转换控制-->
+        <!-- 默认false，把JDBC DECIMAL 和 NUMERIC 类型解析为 Integer，为 true时把JDBC DECIMAL 和
+         NUMERIC 类型解析为java.math.BigDecimal -->
+        <javaTypeResolver>
+            <!-- 是否使用bigDecimal， false可自动转化以下类型（Long, Integer, Short, etc.） -->
+            <property name="forceBigDecimals" value="false" />
+        </javaTypeResolver>
+
+        <!-- 生成实体类地址
+              targetProject ：目标的项目路径
+              targetPackage :表示生产的实体类的包的名称
+         -->
+        <javaModelGenerator targetPackage="com.kgc.book.pojo" targetProject="src/main/java">
+            <!-- 从数据库返回的值被清理前后的空格 -->
+            <property name="trimStrings" value="true" />
+            <!-- enableSubPackages:是否让schema作为包的后缀 -->
+            <property name="enableSubPackages" value="false" />
+        </javaModelGenerator>
+
+        <!-- 生成*Mapper.xml文件
+            有些人习惯把mapper.xml和mapper.java分开放
+            因为xml文件是配置文件的一种
+        -->
+        <sqlMapGenerator targetPackage="com.kgc.book.mapper" targetProject="src/main/java">
+            <!-- enableSubPackages:是否让schema作为包的后缀 -->
+            <property name="enableSubPackages" value="false" />
+        </sqlMapGenerator>
+
+        <!--自动生成的*Mapper.java存放路径 -->
+        <javaClientGenerator targetPackage="com.kgc.book.mapper" targetProject="src/main/java" type="XMLMAPPER">
+            <!-- enableSubPackages:是否让schema作为包的后缀 -->
+            <property name="enableSubPackages" value="false" />
+        </javaClientGenerator>
+
+        <!-- 配置表信息：表示需要把这个数据库中的哪些表生成对应的Java文件 -->
+        <!-- schema即为数据库名 tableName为对应的数据库表 domainObjectName是要生成的实体类
+        enable*ByExample是否生成 example类 默认为true -->
+        <table schema="test" tableName="ebook_category"
+               domainObjectName="EbookCategory">
+            <!-- 是否开启自动驼峰命名规则（camel case）映射 -->
+            <property name="useActualColumnNames" value="true" />
+        </table>
+
+        <table schema="test" tableName="ebook_entry"
+               domainObjectName="EbookEntry">
+            <!-- 是否开启自动驼峰命名规则（camel case）映射 -->
+            <property name="useActualColumnNames" value="true" />
+        </table>
+    </context>
+</generatorConfiguration>

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/tx
+       http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+    <!--spring的核心配置文件-->
+
+    <!--配置包扫描，扫描mapper和service  注解配置实现IOC的方式-->
+    <context:component-scan base-package="com.kgc.book.service"/>
+
+    <!--Mybatis和Spring的整合-->
+    <!--引入外部的关于数据库连接的properties信息-->
+    <context:property-placeholder location="classpath:jdbc.properties"/>
+
+    <!--创建数据源-->
+    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+        <!--配置数据源需要连接数据库的配置-->
+        <property name="driverClass" value="${jdbc.driver}"/>
+        <property name="jdbcUrl" value="${jdbc.url}"/>
+        <property name="user" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+    </bean>
+
+    <!--创建SQLSessionFactoryBean对象-->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <!--创建SQLSessionFactory对象需要使用 数据源对象-->
+        <!--引入已经创建好的数据源对象-->
+        <property name="dataSource" ref="dataSource"/>
+
+        <!--引入mybatis的主配置文件-->
+        <property name="configLocation" value="classpath:mybatis-config.xml"/>
+
+        <!--设置实体类的别名-->
+        <property name="typeAliasesPackage" value="com.kgc.book.pojo"/>
+
+        <!--设置mapper映射文件xml的位置-->
+        <!-- 配置mybatis的mapper映射文件配置，扫描所有***mapper.xml文件 -->
+        <!--if mapper接口的配置文件与接口不在同一目录下，需要手动配置 配置文件的路径-->
+        <!-- <property name="mapperLocations" value="classpath:com/kgc/mapper/*.xml"/>-->
+        <!--<property name="mapperLocations">
+            <array>
+                <value>classpath:com/kgc/mapper/*.xml</value>
+            </array>
+        </property>-->
+
+    </bean>
+
+    <!--创建 配置mapper扫描 MapperScannerConfigurer注入映射器
+     可以扫描指定包中的接口并将它们直接注册为MapperFactoryBean
+    相当于创建SQLSession对象，并调用getBean方法， 把对应的mapper接口实现
+    -->
+    <bean  class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+            <!--使用的包扫描的方式 可以将mapper(dao)层 包扫描进去-->
+         <!--实现自动注入 ***mapper接口注入到spring中-->
+            <property name="basePackage" value="com.kgc.book.mapper"/>
+    </bean>
+
+
+
+    <!--配置注解式声明事务 回滚-->
+    <!--先 配置事务管理器-->
+    <bean id="transactionManager"  class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <!--事务需要数据源的支持-->
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <!--配置事务注解驱动 使用注解的方法 实现配置声明试事务
+            在需要使用事务的方法上面添加一个@Transaction
+    -->
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+
+</beans>
